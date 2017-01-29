@@ -34,7 +34,7 @@ void init_offsets() {
         rootvnode_offset = 0x5aa0b8; /* this one is wrong i think but no devices to test */
     }
     
-    // @iKilledAppl3, @Andywiik, and @iOSResearchr
+    // @iKilledAppl3, @Andywiik, and @iOSResearchr iPod touch 7,1 iOS 10.2
     else if (strcmp(u.version, "Darwin Kernel Version 16.3.0: Tue Nov 29 21:40:08 PST 2016; root:xnu-3789.32.1~4/RELEASE_ARM64_T7000") == 0) {
         allproc_offset = 0x5b8468; // @iKilledAppl3
         procoff = 0x360;

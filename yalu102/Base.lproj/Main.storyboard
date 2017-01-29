@@ -94,6 +94,7 @@
                     <connections>
                         <outlet property="deviceTypeLabel" destination="Aih-5b-il3" id="wC5-Xr-nvf"/>
                         <outlet property="deviceVersionLabel" destination="ved-kj-ELU" id="bTN-t9-gWh"/>
+                        <outlet property="freeMe" destination="dw0-9I-nv5" id="G8v-Rr-Wwi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
