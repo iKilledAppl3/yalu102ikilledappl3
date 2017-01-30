@@ -40,6 +40,7 @@ void init_offsets() {
         procoff = 0x360;
         rootvnode_offset = 0x5be0b8; // @iOSResearchr
         kernproc_offset = 0x5be0e0;// @iKilledAppl3
+        
 }
     
     else {
